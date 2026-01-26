@@ -48,7 +48,7 @@
 <body>
     <a href="/" class="back-link">← Về trang chủ</a>
     
-    <h1>Danh sách sản phẩm</h1>
+    <h1>{{ $title }}</h1>
     
     <!-- Sample Product -->
     <div class="product-card">

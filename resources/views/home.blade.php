@@ -20,7 +20,7 @@
         .links a {
             display: block;
             padding: 10px;
-            margin: 10px 0;
+            margin: 10px 0; 
             background: #007bff;
             color: white;
             text-decoration: none;

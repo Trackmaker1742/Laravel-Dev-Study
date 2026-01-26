@@ -1,32 +1,28 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ProductController;
+use App\Http\Middleware\CheckTimeAccess;
 
-// Route 1: Home page
+// Route 1: Login page
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+
+// Route 2: Home page
 Route::get('/', function () {
     return view('home');
 });
 
 // Route Group for Products (gom nhóm "/product")
 Route::prefix('product')->group(function () {
-    
-    // Route 2: Product list page with sample product
-    Route::get('/', function () {
-        return view('product.index');
-    })->name('product.index');  // Named route example (ví dụ đặt tên route)
-    
-    // Route 3: Add new product page with form
-    Route::get('/add', function () {
-        return view('product.add');
-    })->name('product.add');  // Named route example (gọi route qua tên)
-    
-    // Route 4: Product detail with ID parameter (default value 123)
-    Route::get('/{id}', function ($id = '123') {
-        return "Product ID: " . $id;
+    Route::controller(ProductController::class)->group(function () {    
+        Route::get('/', [ProductController::class, 'index'])->name('product.index');
+        Route::get('/add', [ProductController::class, 'create'])->name('product.add');
+        Route::get('/detail/{id}', [ProductController::class, 'getDetail'])->name('product.detail');
     });
 });
 
-// Route 5: Student information page
+// Route 6: Student information page
 Route::get('/sinhvien/{name}/{mssv}', function ($name, $mssv) {
     return view('sinhvien', [
         'name' => $name,
@@ -34,7 +30,7 @@ Route::get('/sinhvien/{name}/{mssv}', function ($name, $mssv) {
     ]);
 });
 
-// Route 6: Multiplication table (Bảng cửu chương)
+// Route 7: Multiplication table (Bảng cửu chương)
 Route::get('/banco/{n}', function ($n) {
     return view('banco', ['n' => $n]);
 });
