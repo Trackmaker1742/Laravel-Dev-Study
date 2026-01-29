@@ -21,8 +21,18 @@ Route::get('/', function () {
     return view('home');
 });
 
+// Route 3: Age input
+Route::get('/age', function () {
+    return view('age');
+})->name('age.form');
+
+Route::post('/age', function (\Illuminate\Http\Request $request) {
+    $request->session()->put('age', $request->input('age'));
+    return redirect()->route('product.index');
+})->name('age.store');
+
 // Route Group for Products (gom nhóm "/product")
-Route::prefix('product')->group(function () {
+Route::prefix('product')->middleware('age')->group(function () {
     Route::controller(ProductController::class)->group(function () {    
         Route::get('/', [ProductController::class, 'index'])->name('product.index');
         Route::get('/add', [ProductController::class, 'create'])->name('product.add');
