@@ -26,7 +26,7 @@ class AuthController extends Controller
         if($user && Hash::check($password, $user->password)){
             // Login successful
             Auth::login($user);
-            return redirect()->route("product.index");
+            return redirect()->route("age.form");
         } else {
             return redirect()->back()->with("msg", "Đăng nhập thất bại");
         }
@@ -42,6 +42,9 @@ class AuthController extends Controller
         $username = $request->input("username");
         $password = $request->input("password");
         $repass = $request->input("repass");
+        $mssv = $request->input("mssv");
+        $lopmonhoc = $request->input("lopmonhoc");
+        $gioitinh = $request->input("gioitinh");
 
         if ($username !== "Minhnh" || $password !== "123abc"
             || $repass !== "123abc" || $mssv !== "0035467"
@@ -58,10 +61,6 @@ class AuthController extends Controller
         if($existingUser){
             return redirect()->back()->with("msg", "Tên đăng nhập đã tồn tại");
         }
-        
-        $mssv = $request->input("mssv");
-        $lopmonhoc = $request->input("lopmonhoc");
-        $gioitinh = $request->input("gioitinh");
         
         // Create new user
         User::create([
