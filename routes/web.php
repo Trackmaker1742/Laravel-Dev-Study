@@ -11,7 +11,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 
 // Route 2: Register/Create Account
 Route::get('/register', [AuthController::class, 'SignIn'])->name('register.form');
-Route::post('/register', [AuthController::class, 'register'])->name('register');
+Route::post('/register', [AuthController::class, 'CheckSignIn'])->name('register');
 
 // Logout
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
