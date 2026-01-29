@@ -115,7 +115,7 @@
         
         <div class="CheckSignIn-link">
             <p>Chưa có tài khoản?</p>
-            <a href="{{ route('CheckSignIn.form') }}">Tạo tài khoản mới</a>
+            <a href="{{ route('register.form') }}">Tạo tài khoản mới</a>
         </div>
     </div>
 </body>
