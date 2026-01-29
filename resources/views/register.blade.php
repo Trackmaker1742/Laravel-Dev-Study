@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập</title>
+    <title>Tạo tài khoản</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,7 +14,7 @@
             margin: 0;
             background: #f5f5f5;
         }
-        .login {
+        .register {
             background: white;
             padding: 30px;
             border-radius: 5px;
@@ -35,7 +35,7 @@
             color: #555;
             font-weight: bold;
         }
-        input {
+        input, select {
             width: 100%;
             padding: 8px;
             border: 1px solid #ddd;
@@ -43,7 +43,7 @@
             box-sizing: border-box;
             font-size: 14px;
         }
-        input:focus {
+        input:focus, select:focus {
             outline: none;
             border-color: #4CAF50;
             box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
@@ -58,7 +58,6 @@
             font-size: 16px;
             cursor: pointer;
             font-weight: bold;
-            margin-top: 10px;
         }
         button:hover {
             background: #45a049;
@@ -68,54 +67,70 @@
             text-align: center;
             margin-bottom: 15px;
         }
-        .CheckSignIn-link {
+        .login-link {
             text-align: center;
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #ddd;
+            margin-top: 15px;
         }
-        .CheckSignIn-link p {
-            margin: 10px 0;
-            color: #666;
-        }
-        .CheckSignIn-link a {
-            display: inline-block;
-            padding: 10px 20px;
-            background: #2196F3;
-            color: white;
+        .login-link a {
+            color: #4CAF50;
             text-decoration: none;
-            border-radius: 3px;
-            font-weight: bold;
         }
-        .CheckSignIn-link a:hover {
-            background: #0b7dda;
+        .login-link a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <div class="login">
-        <h1>Đăng nhập</h1>
+    <div class="register">
+        <h1>Tạo tài khoản</h1>
         
         @if ($message = session('msg'))
             <div class="error-msg">{{ $message }}</div>
         @endif
         
-        <form method="POST" action="{{ route('login.submit') }}">
+        <form method="POST" action="{{ route('register') }}">
             @csrf
+            
             <div class="form-group">
                 <label for="username">Tên đăng nhập:</label>
                 <input type="text" id="username" name="username" required value="{{ old('username') }}">
             </div>
+            
             <div class="form-group">
                 <label for="password">Mật khẩu:</label>
                 <input type="password" id="password" name="password" required>
             </div>
-            <button type="submit">Đăng nhập</button>
+            
+            <div class="form-group">
+                <label for="repass">Xác nhận mật khẩu:</label>
+                <input type="password" id="repass" name="repass" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="mssv">MSSV (Mã số sinh viên):</label>
+                <input type="text" id="mssv" name="mssv" required value="{{ old('mssv') }}">
+            </div>
+            
+            <div class="form-group">
+                <label for="lopmonhoc">Lớp môn học:</label>
+                <input type="text" id="lopmonhoc" name="lopmonhoc" value="{{ old('lopmonhoc') }}">
+            </div>
+            
+            <div class="form-group">
+                <label for="gioitinh">Giới tính:</label>
+                <select id="gioitinh" name="gioitinh">
+                    <option value="">Chọn giới tính</option>
+                    <option value="Nam" {{ old('gioitinh') === 'Nam' ? 'selected' : '' }}>Nam</option>
+                    <option value="Nữ" {{ old('gioitinh') === 'Nữ' ? 'selected' : '' }}>Nữ</option>
+                    <option value="Khác" {{ old('gioitinh') === 'Khác' ? 'selected' : '' }}>Khác</option>
+                </select>
+            </div>
+            
+            <button type="submit">Tạo tài khoản</button>
         </form>
         
-        <div class="CheckSignIn-link">
-            <p>Chưa có tài khoản?</p>
-            <a href="{{ route('CheckSignIn.form') }}">Tạo tài khoản mới</a>
+        <div class="login-link">
+            Đã có tài khoản? <a href="{{ route('login') }}">Đăng nhập tại đây</a>
         </div>
     </div>
 </body>

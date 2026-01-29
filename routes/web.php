@@ -1,12 +1,20 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\LoginController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
 use App\Http\Middleware\CheckTimeAccess;
 
 // Route 1: Login page
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+
+// Route 2: Register/Create Account
+Route::get('/register', [AuthController::class, 'SignIn'])->name('register.form');
+Route::post('/register', [AuthController::class, 'register'])->name('register');
+
+// Logout
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Route 2: Home page
 Route::get('/', function () {
