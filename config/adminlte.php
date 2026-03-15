@@ -354,6 +354,26 @@ return [
             'url' => 'register',
             'icon' => 'fas fa-fw fa-user-plus',
         ],
+        
+        ['header' => 'Content Management'],
+        
+        // Categories
+        [
+            'text' => 'Danh mục',
+            'icon' => 'fas fa-fw fa-list',
+            'submenu' => [
+                [
+                    'text' => 'Xem danh sách',
+                    'url' => 'category',
+                    'icon' => 'fas fa-fw fa-eye',
+                ],
+                [
+                    'text' => 'Thêm mới',
+                    'url' => 'category/create',
+                    'icon' => 'fas fa-fw fa-plus',
+                ],
+            ],
+        ],
     ],
 
     /*

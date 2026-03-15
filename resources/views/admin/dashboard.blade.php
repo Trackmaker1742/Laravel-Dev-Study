@@ -98,6 +98,12 @@
                         <a href="{{ route('register.form') }}" class="list-group-item nav-link" data-preview-url="{{ route('register.form') }}">
                             <i class="fas fa-user-plus"></i> Register
                         </a>
+                        <a href="{{ route('category.index') }}" class="list-group-item nav-link" data-preview-url="{{ route('category.index') }}">
+                            <i class="fas fa-list"></i> View Categories
+                        </a>
+                        <a href="{{ route('category.create') }}" class="list-group-item nav-link" data-preview-url="{{ route('category.create') }}">
+                            <i class="fas fa-plus-circle"></i> Add New Category
+                        </a>
                     </div>
                 </div>
             </div>
