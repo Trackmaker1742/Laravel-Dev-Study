@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\AdminController;
 use App\Http\Middleware\CheckTimeAccess;
 
 // Route 1: Login page
@@ -51,6 +52,13 @@ Route::get('/sinhvien/{name}/{mssv}', function ($name, $mssv) {
 // Route 7: Multiplication table (Bảng cửu chương)
 Route::get('/banco/{n}', function ($n) {
     return view('banco', ['n' => $n]);
+});
+
+// Admin Dashboard
+Route::prefix('admin')->group(function () {
+    Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::get('/products', [AdminController::class, 'products'])->name('admin.products');
 });
 
 // 404 Error handling - Laravel automatically shows errors/404.blade.php
