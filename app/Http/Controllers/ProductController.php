@@ -18,9 +18,9 @@ class ProductController extends Controller
         // Code to list products
         return view('product.index', ['title' => $title,
             'products' => [
-                ['id' => 1, 'name' => 'Sản phẩm A', 'price' => 1000],
-                ['id' => 2, 'name' => 'Sản phẩm B', 'price' => 2000],
-                ['id' => 3, 'name' => 'Sản phẩm C', 'price' => 3000],
+                ['id' => 1, 'name' => 'Sản phẩm A', 'price' => 1000, 'description' => 'Sản phẩm chất lượng cao', 'status' => 'Còn hàng'],
+                ['id' => 2, 'name' => 'Sản phẩm B', 'price' => 2000, 'description' => 'Sản phẩm bán chạy', 'status' => 'Còn hàng'],
+                ['id' => 3, 'name' => 'Sản phẩm C', 'price' => 3000, 'description' => 'Sản phẩm mới', 'status' => 'Hết hàng'],
             ]
         ]);
     }
@@ -28,30 +28,43 @@ class ProductController extends Controller
         return view("product.detail", ['id' => $id]);
     }
     public function create(Request $request){
-
-        $product = new Product();
-
-        $product->name = $request->name;
-        $product->price = $request->price;
-        $product->stock = $request->stock;
-
-        return redirect("product.add");
+        return view('product.add');
     }
+
     public function store(Request $request){
-        return $request->all();
+        // Here you would save the product to the database
+        // For now, just redirect back
+        return redirect()->route('product.index')->with('success', 'Sản phẩm đã được thêm');
     }
     public function show(string $id){
         $product = Product::find($id);
         return view('product.edit', ['product' => $product]);
     }
-    public function edit(string $id, Request $request){
+    public function edit(string $id){
+        $product = [
+            'id' => $id,
+            'name' => 'Sample Product ' . $id,
+            'price' => 1000,
+            'description' => 'Sample description',
+            'stock' => 10,
+            'status' => 'Còn hàng'
+        ];
+        return view('product.edit', ['product' => $product]);
+    }
 
-        $product = Product::find($id);
+    public function update(string $id, Request $request){
+        // Here you would update the product in the database
+        // For now, just redirect back
+        return redirect()->route('product.index')->with('success', 'Sản phẩm đã được cập nhật');
+    }
 
-        $product->name = $request->name;
-        $product->price = $request->price;
-        $product->stock = $request->stock;
-        
-        return redirect('/products');
+    public function destroy(string $id){
+        // Here you would delete the product from the database
+        // For now, just redirect back
+        return redirect()->route('product.index')->with('success', 'Sản phẩm đã được xóa');
+    }
+
+    public function getDetail(string $id){
+        return view("product.detail", ['id' => $id]);
     }
 }

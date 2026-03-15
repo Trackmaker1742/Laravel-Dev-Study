@@ -91,13 +91,13 @@
 </head>
 <body>
     <div class="container">
-        <h1>Welcome</h1>
+        <h1>Trang chủ</h1>
 
         <div class="menu-section">
-            <h2>Features</h2>
+            <h2>Chức năng</h2>
             <div class="menu-links">
-                <a href="{{ route('age.form') }}">Age Verification & Products</a>
-                <a href="{{ route('product.index') }}" class="secondary">View Products</a>
+                <a href="{{ route('age.form') }}">Nhập tuổi & Xem sản phẩm</a>
+                <a href="{{ route('product.index') }}" class="secondary">Xem sản phẩm</a>
             </div>
         </div>
 

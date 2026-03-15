@@ -37,7 +37,11 @@ Route::prefix('product')->middleware('age')->group(function () {
     Route::controller(ProductController::class)->group(function () {    
         Route::get('/', [ProductController::class, 'index'])->name('product.index');
         Route::get('/add', [ProductController::class, 'create'])->name('product.add');
+        Route::post('/store', [ProductController::class, 'store'])->name('product.store');
         Route::get('/detail/{id}', [ProductController::class, 'getDetail'])->name('product.detail');
+        Route::get('/edit/{id}', [ProductController::class, 'edit'])->name('product.edit');
+        Route::put('/update/{id}', [ProductController::class, 'update'])->name('product.update');
+        Route::delete('/delete/{id}', [ProductController::class, 'destroy'])->name('product.destroy');
     });
 });
 
