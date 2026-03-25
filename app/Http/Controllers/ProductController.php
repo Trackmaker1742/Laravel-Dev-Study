@@ -3,68 +3,126 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Category;
+use App\Http\Middleware\CheckTimeAccess;
 
 class ProductController extends Controller
 {
-    public function middleware(array $middleware)
+    public function __construct()
     {
-        return [
-            CheckTimeAccess::class,
-        ];
+        $this->middleware(CheckTimeAccess::class);
     }
+
+    /**
+     * Danh sách sản phẩm
+     */
     public function index()
     {
         $title = "Danh sách sản phẩm";
-        // Code to list products
-        return view('product.index', ['title' => $title,
-            'products' => [
-                ['id' => 1, 'name' => 'Sản phẩm A', 'price' => 1000, 'description' => 'Sản phẩm chất lượng cao', 'status' => 'Còn hàng'],
-                ['id' => 2, 'name' => 'Sản phẩm B', 'price' => 2000, 'description' => 'Sản phẩm bán chạy', 'status' => 'Còn hàng'],
-                ['id' => 3, 'name' => 'Sản phẩm C', 'price' => 3000, 'description' => 'Sản phẩm mới', 'status' => 'Hết hàng'],
-            ]
+        $products = Product::where('is_delete', false)->paginate(10);
+        return view('product.index', compact('title', 'products'));
+    }
+
+    /**
+     * Form tạo sản phẩm mới
+     */
+    public function create(Request $request)
+    {
+        $categories = Category::where('is_delete', false)->get();
+        return view('product.add', compact('categories'));
+    }
+
+    /**
+     * Lưu sản phẩm vào database
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'sku' => 'required|string|unique:products,sku',
+            'category_id' => 'nullable|exists:categories,id',
+            'price' => 'required|numeric|min:0',
+            'sale_price' => 'nullable|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'is_active' => 'boolean'
         ]);
-    }
-    public function get($id = "123"){
-        return view("product.detail", ['id' => $id]);
-    }
-    public function create(Request $request){
-        return view('product.add');
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('products', 'public');
+            $validated['image'] = $imagePath;
+        }
+
+        $validated['is_delete'] = false;
+        Product::create($validated);
+
+        return redirect()->route('product.index')->with('success', 'Sản phẩm đã được thêm thành công');
     }
 
-    public function store(Request $request){
-        // Here you would save the product to the database
-        // For now, just redirect back
-        return redirect()->route('product.index')->with('success', 'Sản phẩm đã được thêm');
-    }
-    public function show(string $id){
-        $product = Product::find($id);
-        return view('product.edit', ['product' => $product]);
-    }
-    public function edit(string $id){
-        $product = [
-            'id' => $id,
-            'name' => 'Sample Product ' . $id,
-            'price' => 1000,
-            'description' => 'Sample description',
-            'stock' => 10,
-            'status' => 'Còn hàng'
-        ];
-        return view('product.edit', ['product' => $product]);
+    /**
+     * Chi tiết sản phẩm
+     */
+    public function getDetail(string $id)
+    {
+        $product = Product::findOrFail($id);
+        return view('product.detail', compact('product'));
     }
 
-    public function update(string $id, Request $request){
-        // Here you would update the product in the database
-        // For now, just redirect back
-        return redirect()->route('product.index')->with('success', 'Sản phẩm đã được cập nhật');
+    /**
+     * Form chỉnh sửa sản phẩm
+     */
+    public function edit(string $id)
+    {
+        $product = Product::findOrFail($id);
+        $categories = Category::where('is_delete', false)->get();
+        return view('product.edit', compact('product', 'categories'));
     }
 
-    public function destroy(string $id){
-        // Here you would delete the product from the database
-        // For now, just redirect back
+    /**
+     * Cập nhật sản phẩm
+     */
+    public function update(string $id, Request $request)
+    {
+        $product = Product::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'sku' => 'required|string|unique:products,sku,' . $id,
+            'category_id' => 'nullable|exists:categories,id',
+            'price' => 'required|numeric|min:0',
+            'sale_price' => 'nullable|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'is_active' => 'boolean'
+        ]);
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('products', 'public');
+            $validated['image'] = $imagePath;
+        }
+
+        $product->update($validated);
+
+        return redirect()->route('product.index')->with('success', 'Sản phẩm đã được cập nhật thành công');
+    }
+
+    /**
+     * Xóa sản phẩm (soft delete)
+     */
+    public function destroy(string $id)
+    {
+        $product = Product::findOrFail($id);
+        $product->update(['is_delete' => true]);
+
         return redirect()->route('product.index')->with('success', 'Sản phẩm đã được xóa');
     }
 
-    public function getDetail(string $id){
-        return view("product.detail", ['id' => $id]);
+    public function show(string $id)
+    {
+        return $this->getDetail($id);
     }
 }

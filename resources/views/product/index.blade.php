@@ -7,52 +7,45 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 50px auto;
             padding: 20px;
         }
         h1 {
             color: #333;
         }
-        .product-card {
-            border: 1px solid #ddd;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 5px;
-            background: #f9f9f9;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
         }
-        .product-info {
-            flex-grow: 1;
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
         }
-        .product-card h2 {
-            margin-top: 0;
-            color: #007bff;
+        th {
+            background-color: #007bff;
+            color: white;
         }
-        .product-actions {
-            display: flex;
-            gap: 10px;
+        tr:hover {
+            background-color: #f5f5f5;
         }
         .btn {
             display: inline-block;
-            padding: 10px 15px;
-            background: #28a745;
+            padding: 8px 12px;
             color: white;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 4px;
             border: none;
             cursor: pointer;
-            font-size: 14px;
-        }
-        .btn:hover {
-            background: #218838;
+            font-size: 13px;
+            margin-right: 5px;
         }
         .btn-primary {
             background: #007bff;
             padding: 10px 20px;
-            margin-top: 20px;
+            margin-bottom: 20px;
         }
         .btn-primary:hover {
             background: #0056b3;
@@ -63,6 +56,12 @@
         }
         .btn-edit:hover {
             background: #e0a800;
+        }
+        .btn-detail {
+            background: #17a2b8;
+        }
+        .btn-detail:hover {
+            background: #138496;
         }
         .btn-delete {
             background: #dc3545;
@@ -79,6 +78,35 @@
         .delete-form {
             display: inline;
         }
+        .badge {
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .alert {
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .no-products {
+            padding: 20px;
+            text-align: center;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -86,28 +114,63 @@
     
     <h1>{{ $title }}</h1>
     
-    @if(count($products) > 0)
-        @foreach($products as $product)
-            <div class="product-card">
-                <div class="product-info">
-                    <h2>{{ $product['name'] }}</h2>
-                    <p><strong>Giá:</strong> {{ number_format($product['price'], 2) }} VND</p>
-                    <p><strong>Mô tả:</strong> {{ $product['description'] ?? 'N/A' }}</p>
-                    <p><strong>Tình trạng:</strong> <span style="padding: 3px 8px; border-radius: 3px; background: {{ $product['status'] === 'Còn hàng' ? '#d4edda' : '#f8d7da' }}; color: {{ $product['status'] === 'Còn hàng' ? '#155724' : '#721c24' }};">{{ $product['status'] ?? 'N/A' }}</span></p>
-                    <p><strong>ID:</strong> {{ $product['id'] }}</p>
-                </div>
-                <div class="product-actions">
-                    <a href="{{ route('product.edit', $product['id']) }}" class="btn btn-edit">Chỉnh sửa</a>
-                    <form method="POST" action="{{ route('product.destroy', $product['id']) }}" class="delete-form" onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-delete">Xóa</button>
-                    </form>
-                </div>
-            </div>
-        @endforeach
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+    
+    @if($products->count() > 0)
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Danh mục</th>
+                    <th>SKU</th>
+                    <th>Giá</th>
+                    <th>Giá sale</th>
+                    <th>Tồn kho</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($products as $product)
+                    <tr>
+                        <td>{{ $product->id }}</td>
+                        <td>{{ $product->name }}</td>
+                        <td>{{ $product->category ? $product->category->name : 'Không có' }}</td>
+                        <td>{{ $product->sku }}</td>
+                        <td>{{ number_format($product->price, 2) }} VND</td>
+                        <td>{{ $product->sale_price ? number_format($product->sale_price, 2) : '-' }} VND</td>
+                        <td>{{ $product->stock }}</td>
+                        <td>
+                            @if($product->is_active)
+                                <span class="badge badge-success">Đang bán</span>
+                            @else
+                                <span class="badge badge-danger">Ngừng bán</span>
+                            @endif
+                        </td>
+                        <td>
+                            <a href="{{ route('product.detail', $product->id) }}" class="btn btn-detail">Chi tiết</a>
+                            <a href="{{ route('product.edit', $product->id) }}" class="btn btn-edit">Sửa</a>
+                            <form method="POST" action="{{ route('product.destroy', $product->id) }}" class="delete-form" onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-delete">Xóa</button>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+        
+        <div style="margin-top: 20px;">
+            {{ $products->links() }}
+        </div>
     @else
-        <p>Không có sản phẩm nào.</p>
+        <div class="no-products">
+            <p>Không có sản phẩm nào.</p>
+        </div>
     @endif
     
     <a href="{{ route('product.add') }}" class="btn btn-primary">Thêm sản phẩm mới</a>

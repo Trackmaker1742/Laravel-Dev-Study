@@ -71,6 +71,28 @@
             color: #007bff;
             text-decoration: none;
         }
+        .error-message {
+            color: #dc3545;
+            font-size: 13px;
+            margin-top: 3px;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .form-row .form-group {
+            margin-bottom: 0;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
     </style>
 </head>
 <body>
@@ -78,35 +100,82 @@
     
     <h1>Thêm sản phẩm mới</h1>
     
-    <form method="POST" action="{{ route('product.store') }}">
+    @if ($errors->any())
+        <div style="background: #f8d7da; color: #721c24; padding: 12px; border-radius: 4px; margin-bottom: 20px;">
+            <strong>Lỗi xác thực:</strong>
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+    
+    <form method="POST" action="{{ route('product.store') }}" enctype="multipart/form-data">
         @csrf
+        
         <div class="form-group">
-            <label for="name">Tên sản phẩm:</label>
-            <input type="text" id="name" name="name" required>
+            <label for="name">Tên sản phẩm: <span style="color: red;">*</span></label>
+            <input type="text" id="name" name="name" value="{{ old('name') }}" required>
+            @error('name') <div class="error-message">{{ $message }}</div> @enderror
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="sku">SKU: <span style="color: red;">*</span></label>
+                <input type="text" id="sku" name="sku" value="{{ old('sku') }}" required>
+                @error('sku') <div class="error-message">{{ $message }}</div> @enderror
+            </div>
+            
+            <div class="form-group">
+                <label for="category_id">Danh mục (Quản lý Sản phẩm):</label>
+                <select id="category_id" name="category_id">
+                    <option value="">-- Chọn danh mục --</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('category_id') <div class="error-message">{{ $message }}</div> @enderror
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="price">Giá: <span style="color: red;">*</span></label>
+                <input type="number" id="price" name="price" step="0.01" value="{{ old('price') }}" min="0" required>
+                @error('price') <div class="error-message">{{ $message }}</div> @enderror
+            </div>
+            
+            <div class="form-group">
+                <label for="sale_price">Giá sale:</label>
+                <input type="number" id="sale_price" name="sale_price" step="0.01" value="{{ old('sale_price') }}" min="0">
+                @error('sale_price') <div class="error-message">{{ $message }}</div> @enderror
+            </div>
         </div>
         
         <div class="form-group">
-            <label for="price">Giá:</label>
-            <input type="number" id="price" name="price" step="0.01" required>
+            <label for="stock">Số lượng tồn kho: <span style="color: red;">*</span></label>
+            <input type="number" id="stock" name="stock" value="{{ old('stock', 0) }}" min="0" required>
+            @error('stock') <div class="error-message">{{ $message }}</div> @enderror
         </div>
         
         <div class="form-group">
             <label for="description">Mô tả:</label>
-            <textarea id="description" name="description" required></textarea>
+            <textarea id="description" name="description">{{ old('description') }}</textarea>
+            @error('description') <div class="error-message">{{ $message }}</div> @enderror
         </div>
         
         <div class="form-group">
-            <label for="stock">Số lượng tồn kho:</label>
-            <input type="number" id="stock" name="stock" required>
+            <label for="image">Ảnh sản phẩm:</label>
+            <input type="file" id="image" name="image" accept="image/*">
+            @error('image') <div class="error-message">{{ $message }}</div> @enderror
         </div>
         
-        <div class="form-group">
-            <label for="status">Tình trạng:</label>
-            <select id="status" name="status" required>
-                <option value="Còn hàng">Còn hàng</option>
-                <option value="Hết hàng">Hết hàng</option>
-                <option value="Ngừng kinh doanh">Ngừng kinh doanh</option>
-            </select>
+        <div class="form-group checkbox-group">
+            <input type="checkbox" id="is_active" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}>
+            <label for="is_active" style="margin-bottom: 0;">Kích hoạt (Đang bán)</label>
         </div>
         
         <div class="form-actions">
